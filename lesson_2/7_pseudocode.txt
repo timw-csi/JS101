@@ -1,0 +1,61 @@
+1.  a function that returns the sum of two numbers 
+
+// get each 2 numbers
+// add the 2 numbers
+// print the result to screen
+
+START
+
+GET the two numbers
+add them up
+PRINT sum of two numbers
+
+END
+
+2. a function that takes an array of strings, and returns a string that is all
+  those strings concatenated together 
+
+// get array of strings
+// start with first index in array as saved store
+// concat second index, current value, into saved store
+// move onto third index, concat into store
+// repeat until end of array
+
+START
+
+GET array of strings
+
+SET iterator = 1
+
+
+WHILE iterator <= length of array
+	SET stored = as string in first index 
+	SET current = as string in second index
+	stored += current 	
+
+	iterator += 1
+
+PRINT stored	
+
+
+3.  a function that takes an array of integers, and returns a new array with every
+ other element 
+ 
+ // get array of ints
+ // create a new empty array
+ // iterate over orig array
+ // push alternate values into new array
+ // return new array
+
+ START
+
+ SET iterator = 1
+
+ WHILE iterator <= length of array1
+	READ int from array1 at space "iterator"
+	SET array2 with read value from array1
+
+	iterator += 2
+
+PRINT array2
+
