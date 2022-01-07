@@ -29,7 +29,7 @@ function selection() {
   (First letters also accepted. e.g. 'r' for rock,
   'sc' for scissors, 'sp' for spock.)`);
 
-  choice = readline.question();
+  choice = readline.question().toLowerCase();
 
   abbreviate(choice);
 
@@ -38,7 +38,7 @@ function selection() {
     (First letters also accepted. e.g. 'r' for rock,
     'sc' for scissors, 'sp' for spock.)`);
 
-    choice = readline.question();
+    choice = readline.question().toLowerCase();
 
     abbreviate(choice);
   }
