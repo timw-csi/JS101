@@ -1,6 +1,19 @@
+/* Need to get it working again.
+  gotta fix issues from playerWins reformatting, and also
+  reformat VALID_CHOICES to object.
+*/
+
 const readline = require('readline-sync');
 
-const VALID_CHOICES = ['rock', 'paper', 'scissors', 'spock', 'lizard'];
+const WINS_NEEDED = 3;
+
+const VALID_CHOICES = {
+  r:  'rock',
+  p:  'paper',
+  sc: 'scissors',
+  sp: 'spock',
+  l:  'lizard',
+};
 
 const WINNING_COMBOS = {
   rock:     ['scissors', 'lizard'],
@@ -10,8 +23,13 @@ const WINNING_COMBOS = {
   lizard:   ['paper',    'spock'],
 };
 
+const CHOICE_ABBREVS = Object.keys(VALID_CHOICES);
+const CHOICE_LONG = Object.values(VALID_CHOICES);
+
 let newGame;
 let choice;
+let computerChoice;
+let winner;
 let playerTally = 0;
 let computerTally = 0;
 
@@ -21,26 +39,27 @@ function prompt(message) {
 
 function greeting() {
   prompt(`Welcome to Rock, Paper, Scissors, Spock, Lizard.
-  This is a best of 5 series. First to 3 games wins. Good luck!`);
+  This is a best of 5 series. First to ${WINS_NEEDED} games wins. Good luck!`);
 }
 
 function selection() {
-  prompt(`Choose one: ${VALID_CHOICES.join(', ')}.
+  prompt(`Choose one: ${Object.values(VALID_CHOICES)}.
   (First letters also accepted. e.g. 'r' for rock,
   'sc' for scissors, 'sp' for spock.)`);
 
   choice = readline.question().toLowerCase();
 
-  abbreviate(choice);
+  abbreviate();
 
-  while (!VALID_CHOICES.includes(choice)) {
-    prompt(`Please select: ${VALID_CHOICES.join(', ')}.
+
+  while (!CHOICE_ABBREVS.includes(choice) && !CHOICE_LONG.includes(choice)) {
+    prompt(`Please select: ${Object.values(VALID_CHOICES)}.
     (First letters also accepted. e.g. 'r' for rock,
     'sc' for scissors, 'sp' for spock.)`);
 
     choice = readline.question().toLowerCase();
 
-    abbreviate(choice);
+    abbreviate();
   }
 }
 
@@ -52,46 +71,41 @@ function invalidAnswer(answer) {
   } else return true;
 }
 
-function abbreviate(selection) {
-  switch (selection) {
-    case 'r':
-      choice = 'rock';
-      break;
-    case 'p':
-      choice = 'paper';
-      break;
-    case 'sc':
-      choice = 'scissors';
-      break;
-    case 'sp':
-      choice = 'spock';
-      break;
-    case 'l':
-      choice = 'lizard';
-      break;
+function abbreviate() {
+  if (CHOICE_ABBREVS.includes(choice)) {
+    choice = VALID_CHOICES[choice];
   }
 }
 
-function playerWins(choice, computerChoice) {
-  return WINNING_COMBOS[choice].includes(computerChoice);
+function computerSelection() {
+  let randomIndex = Math.ceil(Math.random() * (CHOICE_ABBREVS.length - 1));
+  computerChoice = VALID_CHOICES[CHOICE_ABBREVS[randomIndex]];
 }
 
-function displayWinner(choice, computerChoice) {
-  prompt(`You chose ${choice}, computer chose ${computerChoice}.`);
-
-  if (playerWins(choice, computerChoice)) {
-    prompt('You win!');
+function determineWinner(choice, computerChoice) {
+  if (WINNING_COMBOS[choice].includes(computerChoice)) {
+    winner = 'player';
   } else if (choice === computerChoice) {
-    prompt("It's a tie.");
+    winner = 'No one';
   } else {
-    prompt('Computer wins!');
+    winner = 'computer';
+  }
+
+  return winner;
+}
+
+function displayWinner(choice, computerChoice, winner) {
+  prompt(`You chose ${choice}, computer chose ${computerChoice}.`);
+  prompt(`${winner[0].toUpperCase() + winner.slice(1)} wins.`);
+  if (winner === 'No one') {
+    prompt(`It's a tie.`);
   }
 }
 
-function tallyScore(choice, computerChoice) {
-  if (playerWins(choice, computerChoice)) {
+function tallyScore(winner) {
+  if (winner === 'player') {
     playerTally += 1;
-  } else if (playerWins(computerChoice, choice)) {
+  } else if (winner === 'computer') {
     computerTally += 1;
   }
 }
@@ -101,15 +115,15 @@ function displayScore(playerTally, computerTally) {
 }
 
 function declareChampion(playerTally, computerTally) {
-  if (playerTally === 3) {
+  if (playerTally === WINS_NEEDED) {
     prompt(`Player is the Grand Champion in this best of 5 series.`);
-  } else if (computerTally === 3) {
+  } else if (computerTally === WINS_NEEDED) {
     prompt(`Computer is the Grand Champion in this best of 5 series.`);
   }
 }
 
 function resetGame() {
-  if (playerTally === 3 || computerTally === 3) {
+  if (playerTally === WINS_NEEDED || computerTally === WINS_NEEDED) {
     playerTally = 0;
     computerTally = 0;
   }
@@ -133,13 +147,13 @@ do {
 
   selection();
 
-  let randomIndex = Math.ceil(Math.random() * (VALID_CHOICES.length - 1));
-  let computerChoice = VALID_CHOICES[randomIndex];
+  computerSelection();
 
+  determineWinner(choice, computerChoice);
 
-  displayWinner(choice, computerChoice);
+  displayWinner(choice, computerChoice, winner);
 
-  tallyScore(choice, computerChoice);
+  tallyScore(winner);
 
   displayScore(playerTally, computerTally);
 
@@ -150,3 +164,7 @@ do {
   playAgain();
 
 } while (newGame[0] !== 'n');
+
+if (newGame[0] === 'n') {
+  prompt(`Goodbye, thanks for playing.`);
+}
