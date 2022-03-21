@@ -1,1 +1,1 @@
-# JS_Exercises
+# JS101_Exercises - Small Problems
